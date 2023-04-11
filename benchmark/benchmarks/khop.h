@@ -25,6 +25,7 @@ template <class Graph>
 class ll_b_khop : public ll_benchmark<Graph> {
 
 	node_t root;
+	int k;
 
 
 public:
@@ -34,10 +35,11 @@ public:
 	 *
 	 * @param r the root
 	 */
-	ll_b_khop(node_t r)
+	ll_b_khop(node_t r, int khops)
 		: ll_benchmark<Graph>("Khop - Query") {
 
 		root = r;
+		k = khops;
 	}
 
 
@@ -55,13 +57,15 @@ public:
 	 */
 	virtual double run(void) {
 
-		std::cout << "=====khop - run=====";
+		std::cout << "you are running "<< k << "-hop query targeted at "<< root << std::endl;
 
 		Graph& G = *this->_graph;
 		int32_t k = 1;
 
 		khop_khop<Graph> _KHOP(G, root, k);
+
 		_KHOP.khop_test();
+		_KHOP.iterate_neighbor_small(root);
 
 		return 123; 
 	}

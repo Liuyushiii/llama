@@ -977,7 +977,7 @@ static ll_runnable_thing g_runnable_things[] = {
 // The Command-Line Arguments                                               //
 //==========================================================================//
 
-static const char* SHORT_OPTIONS = "c:C:d:DIhl:Ln:No:OP:r:R:t:ST:UvX:"
+static const char* SHORT_OPTIONS = "c:C:d:DIhl:Ln:No:OP:r:R:k:t:ST:UvX:"
 	IF_LL_STREAMING("B:M:W:");
 
 static struct option LONG_OPTIONS[] =
@@ -990,6 +990,7 @@ static struct option LONG_OPTIONS[] =
 	{"in-edges"     , no_argument,       0, 'I'},
 	{"level"        , required_argument, 0, 'l'},
 	{"levels"       , required_argument, 0, 'l'},
+	{"khops"        , required_argument, 0, 'k'},
 	{"load"         , no_argument,       0, 'L'},
 	{"num-iters"    , required_argument, 0, 'n'},
 	{"no-properties", no_argument,       0, 'N'},
@@ -1035,6 +1036,7 @@ static void usage(const char* arg0) {
 	fprintf(stderr, "  -D, --deduplicate     Deduplicate edges within level while loading\n");
 	fprintf(stderr, "  -h, --help            Show this usage information and exit\n");
 	fprintf(stderr, "  -I, --in-edges        Load or generate in-edges\n");
+	fprintf(stderr, "  -k, --khops        	 Parameter of k_hop query\n");
 	fprintf(stderr, "  -l, --level N[-M]     Set the level or the min and max levels\n");
 #ifdef LL_PERSISTENCE
 	fprintf(stderr, "  -L, --load            Load the input files into the database\n");
@@ -1183,6 +1185,7 @@ int main(int argc, char** argv)
 	int max_level = -1;
 	int num_threads = -1;
 	int num_iters = -1;
+	int khops = 1;
 
 	node_t root_node = 0; (void) root_node;
 	node_t print_node_from = LL_NIL_NODE;
@@ -1197,7 +1200,7 @@ int main(int argc, char** argv)
 	int streaming_batch = 1000 * 1000; (void) streaming_batch;
 	int streaming_window = 10; (void) streaming_window;
 
-
+	// std::cout << "================================" << std::endl;
 	// Pase the command-line arguments
 
 	int option_index = 0;
@@ -1238,6 +1241,10 @@ int main(int argc, char** argv)
 
 			case 'I':
 				do_in_edges = true;
+				break;
+
+			case 'k':
+				khops = atoi(optarg);
 				break;
 
 			case 'l':
@@ -1562,7 +1569,7 @@ int main(int argc, char** argv)
 #endif
 #if B < 0 || B == 22
 	// std::cout << "calling ll_b_khop " << std::endl;
-	LL_RT_COND_CREATE(run_task_class, 22, ll_b_khop, root_node);
+	LL_RT_COND_CREATE(run_task_class, 22, ll_b_khop, root_node, khops);
 	// LL_RT_COND_CREATE(run_task_class,  3, ll_b_bfs, root_node);
 #endif
 #undef B
@@ -1605,7 +1612,7 @@ int main(int argc, char** argv)
 
 	if (benchmark != NULL) {
 
-		std::cout << "benchmark is not null" << std::endl;
+		// std::cout << "benchmark is not null" << std::endl;
 
 		char s_start_time[64];
 		strftime(s_start_time, sizeof(s_start_time), "%m/%d/%y %H:%M:%S",
@@ -1616,10 +1623,10 @@ int main(int argc, char** argv)
 		printf("Count      : %lu\n", counter.benchmark_count);
 		fflush(stdout);
 	}
-	else{
+	// else{
 		
-		std::cout << "benchmark is null" << std::endl;
-	}
+	// 	std::cout << "benchmark is null" << std::endl;
+	// }
 	// Prepare the benchmark
 
 	stats.before_load();

@@ -88,6 +88,10 @@ while getopts ":d:hL:R:" opt; do
 			echo "  -R GIT     Set the GIT repository location" >&2
 			exit 0
 			;;
+		# k)
+		# 	# CHECKOUT_SOURCE="$OPTARG"
+		# 	# CHECKOUT_CLEAN=1
+		# 	;;
 		L)
 			X="$(cd "$ORG_PWD" && cd "$OPTARG" && pwd)"
 			LINK_TO_BUILD_DIR="$LINK_TO_BUILD_DIR $X"
@@ -98,6 +102,7 @@ while getopts ":d:hL:R:" opt; do
 			;;
 		\?)
 			echo "Invalid option: -$OPTARG" >&2
+			# echo "test"
 			exit 1
 			;;
 		:)
